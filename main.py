@@ -1,22 +1,29 @@
 from table_scraper import *
+from graph_generator import *
 
 #Determines desired data by user input
 print("What year do you want to see? (2022, 2021 ... 1950)")
 year_input = input()
 
-print("What do you want to see from that year? (drivers, races, team, fastest-laps)")
+print("What do you want to see from that year? (drivers, minimal race, full race)")
 type_input = input()
 
-#Initialises html soup object
-getPage(year_input, type_input)
 
 #Performs web scraping to obtain data
 match type_input:
     case "drivers":
-        driversStandings()
+        drivers = driversStandings(year_input)
 
-    case "races":
-        raceResults()
+    case "minimal race":
+        races = basicRaceResults(year_input)
+
+    case "full race":
+        races = fullRaceResults(year_input)
+
+        print("Which driver do you want to see?")
+        driver = input()
+
+        driverPoints(races, driver, year_input)
 
 
 #To get race progression:
