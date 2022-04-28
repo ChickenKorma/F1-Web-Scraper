@@ -1,4 +1,3 @@
-from msilib.schema import tables
 import requests
 from bs4 import BeautifulSoup
 
@@ -70,22 +69,3 @@ def raceResults():
         print(f"Laps: {laps}")
         print(f"Time: {time}")
         print()
-
-print("What year do you want to see? (2022, 2021 ... 1950)")
-year_input = input()
-
-#print("What do you want to see from that year? (drivers, races, team, fastest-laps)")
-#type_input = input()
-type_input = "races"
-
-getPage(year_input, type_input)
-#driversStandings()
-raceResults()
-
-
-#To get race progression:
-#   Go to the year page
-#   Gather list of races from html
-#   Cycle through list of pages
-#   Obtain grand prix name by the URL
-#   Use table scraping as normal
