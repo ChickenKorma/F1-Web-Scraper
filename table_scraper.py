@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
+#Requests desired page html and creates global soup object
 def getPage(year, type):
     URL = f"https://www.formula1.com/en/results.html/{year}/{type}.html"
     page = requests.get(URL)
@@ -8,6 +9,7 @@ def getPage(year, type):
     global soup
     soup = BeautifulSoup(page.content, "html.parser")
 
+#Parses html to extract table rows into table_elements
 def getTable():
     table = soup.find("table", class_="resultsarchive-table")
     table_body = table.find("tbody")
@@ -15,6 +17,7 @@ def getTable():
     global table_elements
     table_elements = table_body.find_all("tr")
 
+#Parses table_elements to return list of drivers and associated data
 def driversStandings():
     getTable()
     
@@ -41,6 +44,7 @@ def driversStandings():
         print(f"Points: {points}")
         print()
 
+#Parses table_elements to return list of races and associated data
 def raceResults():
     getTable()
     
