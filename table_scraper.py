@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import os
 
 url_prefix = "https://www.formula1.com"
 
@@ -145,6 +146,11 @@ def raceResults(year):
 
 def scrapeDrivers(start, stop):
     for year in range(start, stop + 1, 1):
+        full_path = os.getcwd() + "/Data/driver_standings/"
+
+        if not os.path.isdir(full_path):
+            os.mkdir(full_path)
+
         drivers = driversStandings(year)
 
         data_frame = pd.DataFrame(drivers)
@@ -153,6 +159,11 @@ def scrapeDrivers(start, stop):
 
 def scrapeRaces(start, stop):
     for year in range(start, stop + 1, 1):
+        full_path = os.getcwd() + f"/Data/race_results/{year}/"
+
+        if not os.path.isdir(full_path):
+            os.mkdir(full_path)
+
         races = raceResults(year)
 
         race_list = []
