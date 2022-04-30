@@ -119,7 +119,7 @@ def raceResults(year):
         race_details_elements = race_details.find_all("span")
 
         if len(race_details_elements) == 2:
-            race_date = race_details_elements[0]
+            race_date = race_details_elements[0].text
             race_name_parts = race_details_elements[1].text.split(", ")
             
         else:
