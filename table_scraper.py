@@ -99,6 +99,13 @@ def raceResults(year):
         getSpecificPage(race[1])
         getTable()
         
+        race_details = soup.find("p", class_ = "date")
+        race_details_elements = race_details.find_all("span")
+        race_date = f"{race_details_elements[0].text} - {race_details_elements[1].text}"
+        race_name_parts = race_details_elements[2].text.split(", ")
+        track_name = race_name_parts[0]
+        region_name = race_name_parts[1]
+
         driver_list = []
 
         for driver in table_elements:
@@ -130,7 +137,7 @@ def raceResults(year):
             driver_info = [position, number, name, team, laps, time, points]
             driver_list.append(driver_info)
 
-        race_info = [race[0], driver_list]
+        race_info = [track_name, region_name, race[0], race_date, driver_list]
 
         race_list.append(race_info)
 
@@ -148,10 +155,18 @@ def scrapeRaces(start, stop):
     for year in range(start, stop + 1, 1):
         races = raceResults(year)
 
+        race_list = []
+
         for race in races:
-            data_frame = pd.DataFrame(race[1])
+            race_list.append([race[0], race[1], race[2], race[3]])
+
+            data_frame = pd.DataFrame(race[4])
             data_frame.columns = ["Position", "Number", "Name", "Team", "Laps", "Time", "Points"]
-            data_frame.to_csv(f"Data/race_results/{year}/{race[0]}.csv", index = False)
+            data_frame.to_csv(f"Data/race_results/{year}/{race[2]}.csv", index = False)
+
+        data_frame = pd.DataFrame(race_list)
+        data_frame.columns = ["Track", "Region", "Country/Race", "Date"]
+        data_frame.to_csv(f"Data/race_results/{year}/_races.csv", index = False)
 
 #Determines desired data by user input
 print("What data do you want to scrape? (drivers, races)")
