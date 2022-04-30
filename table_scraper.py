@@ -52,7 +52,7 @@ def getRaceList():
 
 
 #Parses table_elements to return list of drivers and associated data
-def driversStandings(year):
+def driverStandings(year):
     getGenericPage(year, "drivers")
     getTable()
     
@@ -74,17 +74,32 @@ def driversStandings(year):
 
         points = cells[5].text
 
-        #print(f"Position: {position}")
-        #print(f"Name: {name}")
-        #print(f"Nationality: {nationality}")
-        #print(f"Team: {team}")
-        #print(f"Points: {points}")
-        #print()
-
         driver_info = [position, name, nationality, team, points]
         driver_list.append(driver_info)
 
     return driver_list
+
+#Parses table_elements to return list of teams and associated data
+def teamStandings(year):
+    getGenericPage(year, "team")
+    getTable()
+    
+    team_list = []
+
+    for team in table_elements:
+        cells = team.find_all("td")
+
+        position = cells[1].text
+
+        name_element = cells[2]
+        name = name_element.find("a").text
+
+        points = cells[3].text
+
+        team_info = [position, name, points]
+        team_list.append(team_info)
+
+    return team_list
 
 #Generates list of races that season and parses html in each to return list of drivers and associated data
 def raceResults(year):
@@ -128,13 +143,6 @@ def raceResults(year):
 
             points = cells[7].text
 
-            #print(f"Position: {position}")
-            #print(f"Name: {name}")
-            #print(f"Nationality: {nationality}")
-            #print(f"Team: {team}")
-            #print(f"Points: {points}")
-            #print()
-
             driver_info = [position, number, name, team, laps, time, points]
             driver_list.append(driver_info)
 
@@ -144,6 +152,7 @@ def raceResults(year):
 
     return race_list
 
+#Iterates through chosen years, scrapes driver standings and saves as csv
 def scrapeDrivers(start, stop):
     for year in range(start, stop + 1, 1):
         full_path = os.getcwd() + "/Data/driver_standings/"
@@ -151,12 +160,27 @@ def scrapeDrivers(start, stop):
         if not os.path.isdir(full_path):
             os.mkdir(full_path)
 
-        drivers = driversStandings(year)
+        drivers = driverStandings(year)
 
         data_frame = pd.DataFrame(drivers)
         data_frame.columns = ["Position", "Name", "Nationality", "Team", "Points"]
         data_frame.to_csv(f"Data/driver_standings/{year}.csv", index = False)
 
+#Iterates through chosen years, scrapes team standings and saves as csv
+def scrapeTeams(start, stop):
+    for year in range(start, stop + 1, 1):
+        full_path = os.getcwd() + "/Data/team_standings/"
+
+        if not os.path.isdir(full_path):
+            os.mkdir(full_path)
+
+        teams = teamStandings(year)
+
+        data_frame = pd.DataFrame(teams)
+        data_frame.columns = ["Position", "Name", "Points"]
+        data_frame.to_csv(f"Data/team_standings/{year}.csv", index = False)
+
+#Iterates through chosen years, scrapes race results and saves in seperate csv files + csv containing race names and dates
 def scrapeRaces(start, stop):
     for year in range(start, stop + 1, 1):
         full_path = os.getcwd() + f"/Data/race_results/{year}/"
@@ -180,7 +204,7 @@ def scrapeRaces(start, stop):
         data_frame.to_csv(f"Data/race_results/{year}/_races.csv", index = False)
 
 #Determines desired data by user input
-print("What data do you want to scrape? (drivers, races)")
+print("What data do you want to scrape? (drivers, races, teams)")
 type_input = input()
 
 print("What year do you want to start from? (2022, 2021 ... 1950)")
@@ -196,5 +220,8 @@ match type_input:
 
     case "races":
         scrapeRaces(start_input, stop_input)
+
+    case "teams":
+        scrapeTeams(start_input, stop_input)
 
 
