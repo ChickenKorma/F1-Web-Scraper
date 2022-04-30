@@ -117,8 +117,15 @@ def raceResults(year):
         
         race_details = soup.find("p", class_ = "date")
         race_details_elements = race_details.find_all("span")
-        race_date = f"{race_details_elements[0].text} - {race_details_elements[1].text}"
-        race_name_parts = race_details_elements[2].text.split(", ")
+
+        if len(race_details_elements) == 2:
+            race_date = race_details_elements[0]
+            race_name_parts = race_details_elements[1].text.split(", ")
+            
+        else:
+            race_date = f"{race_details_elements[0].text} - {race_details_elements[1].text}"
+            race_name_parts = race_details_elements[2].text.split(", ")
+            
         track_name = race_name_parts[0]
         region_name = race_name_parts[1]
 
@@ -183,6 +190,9 @@ def scrapeTeams(start, stop):
 #Iterates through chosen years, scrapes race results and saves in seperate csv files + csv containing race names and dates
 def scrapeRaces(start, stop):
     for year in range(start, stop + 1, 1):
+
+        print(year)
+
         full_path = os.getcwd() + f"/Data/race_results/{year}/"
 
         if not os.path.isdir(full_path):
