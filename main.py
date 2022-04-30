@@ -5,7 +5,7 @@ from graph_generator import *
 print("What year do you want to see? (2022, 2021 ... 1950)")
 year_input = input()
 
-print("What do you want to see from that year? (drivers, minimal race, full race)")
+print("What do you want to see from that year? (drivers, races)")
 type_input = input()
 
 
@@ -14,11 +14,8 @@ match type_input:
     case "drivers":
         drivers = driversStandings(year_input)
 
-    case "minimal race":
-        races = basicRaceResults(year_input)
-
-    case "full race":
-        races = fullRaceResults(year_input)
+    case "races":
+        races = raceResults(year_input)
 
         print("Which driver do you want to see?")
         driver = input()

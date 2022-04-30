@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
 
 url_prefix = "https://www.formula1.com"
 
@@ -84,46 +85,8 @@ def driversStandings(year):
 
     return driver_list
 
-#Parses table_elements to return list of races and associated data
-def basicRaceResults(year):
-    getGenericPage(year, "races")
-    getTable()
-
-    race_list = []
-    
-    for race in table_elements:
-        cells = race.find_all("td")
-
-        grand_prix_element = cells[1]
-        grand_prix = grand_prix_element.find("a").text.strip()
-
-        date = cells[2].text
-
-        winner_element = cells[3]
-        winner_spans = winner_element.find_all("span")
-        winner = f"{winner_spans[0].text} {winner_spans[1].text} ({winner_spans[2].text})"
-
-        team = cells[4].text
-
-        laps = cells[5].text
-
-        time = cells[6].text
-
-        #print(f"Grand Prix: {grand_prix}")
-        #print(f"Date: {date}")
-        #print(f"Winner: {winner}")
-        #print(f"Team: {team}")
-        #print(f"Laps: {laps}")
-        #print(f"Time: {time}")
-        #print()
-
-        race_info = [grand_prix, date, winner, team, laps, time]
-        race_list.append(race_info)
-
-    return race_list
-
 #Generates list of races that season and parses html in each to return list of drivers and associated data
-def fullRaceResults(year):
+def raceResults(year):
     getGenericPage(year, "races")
     races = getRaceList()
 
@@ -172,3 +135,40 @@ def fullRaceResults(year):
         race_list.append(race_info)
 
     return race_list
+
+def scrapeDrivers(start, stop):
+    for year in range(start, stop + 1, 1):
+        drivers = driversStandings(year)
+
+        data_frame = pd.DataFrame(drivers)
+        data_frame.columns = ["Position", "Name", "Nationality", "Team", "Points"]
+        data_frame.to_csv(f"Data/driver_standings/{year}.csv", index = False)
+
+def scrapeRaces(start, stop):
+    for year in range(start, stop + 1, 1):
+        races = raceResults(year)
+
+        for race in races:
+            data_frame = pd.DataFrame(race[1])
+            data_frame.columns = ["Position", "Number", "Name", "Team", "Laps", "Time", "Points"]
+            data_frame.to_csv(f"Data/race_results/{year}/{race[0]}.csv", index = False)
+
+#Determines desired data by user input
+print("What data do you want to scrape? (drivers, races)")
+type_input = input()
+
+print("What year do you want to start from? (2022, 2021 ... 1950)")
+start_input = int(input())
+
+print("What year do you want to stop at? (2022, 2021 ... 1950)")
+stop_input = int(input())
+
+#Performs web scraping to obtain data
+match type_input:
+    case "drivers":
+        scrapeDrivers(start_input, stop_input)
+
+    case "races":
+        scrapeRaces(start_input, stop_input)
+
+
